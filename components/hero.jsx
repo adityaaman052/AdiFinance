@@ -42,9 +42,9 @@ const HeroSection = () => {
               Get Started
             </Button>
           </Link>
-          <Link href="https://www.youtube.com/roadsidecoder">
+          <Link href="https://adiblog-213z.vercel.app/">
             <Button  size="lg" variant="outline" className="px-8 text-black hover:bg-gray-400">
-              Watch Demo
+              Visit my blogs
             </Button>
           </Link>
         </div>
