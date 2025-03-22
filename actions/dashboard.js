@@ -22,7 +22,7 @@ export async function getUserAccounts() {
   if (!userId) throw new Error("Unauthorized");
 
   const user = await db.user.findUnique({
-    where: { clerkUserId: userId },
+    where: { clerkUserId: userId }, // Use the logged-in user's ID
   });
 
   if (!user) {
@@ -48,8 +48,10 @@ export async function getUserAccounts() {
     return serializedAccounts;
   } catch (error) {
     console.error(error.message);
+    throw new Error("Failed to fetch accounts");
   }
 }
+
 
 export async function createAccount(data) {
   try {

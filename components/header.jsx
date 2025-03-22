@@ -1,14 +1,56 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from './ui/button';
 import { PenBox, LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
+import { SignedIn, SignedOut, SignInButton, UserButton, useAuth, useUser } from '@clerk/nextjs';
 import Image from 'next/image';
+import { createUser } from '@/lib/use-actions';
 
 const Header = () => {
+  const { userId, isSignedIn } = useAuth();
+  const { user, isLoaded } = useUser();
+
+  useEffect(() => {
+    // Only run this effect when the user data is loaded and the user is signed in
+    if (isLoaded && isSignedIn && user && userId) {
+      const saveUserToDatabase = async () => {
+        try {
+          // Check if we have all required data before proceeding
+          const primaryEmail = user.primaryEmailAddress?.emailAddress;
+          
+          if (!primaryEmail) {
+            console.error('Missing primary email address');
+            return;
+          }
+          
+          // Extract user data from Clerk
+          const userData = {
+            clerkUserId: userId,
+            email: primaryEmail,
+            name: user.fullName || 
+                 `${user.firstName || ''} ${user.lastName || ''}`.trim() || 
+                 undefined,
+            imageUrl: user.imageUrl || undefined
+          };
+          
+          // Log the userData for debugging
+          console.log('Attempting to save user with data:', userData);
+          
+          // Call the server action to create/update the user
+          const result = await createUser(userData);
+          console.log('User saved to database successfully', result);
+        } catch (error) {
+          console.error('Error saving user to database:', error);
+        }
+      };
+
+      saveUserToDatabase();
+    }
+  }, [isLoaded, isSignedIn, user, userId]);
+
   return (
     <motion.header
       initial={{ opacity: 0, y: -20 }}
@@ -74,6 +116,7 @@ const Header = () => {
                   avatarBox: 'w-10 h-10 border-2 border-purple-500 hover:scale-110 transition-all',
                 },
               }}
+              afterSignOutUrl="/"
             />
           </SignedIn>
         </div>
