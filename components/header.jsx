@@ -63,7 +63,7 @@ const Header = () => {
         <motion.div whileHover={{ scale: 1.1 }}>
           <Link href="/">
             <Image
-              src="/logo.png"
+              src="/newLogo2.png"
               alt="Finance Logo"
               width={200}
               height={60}
